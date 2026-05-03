@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 @Repository
 public class JobExecutionRepository {
@@ -19,7 +20,8 @@ public class JobExecutionRepository {
     @Value("${maildb.password}")
     private String password;
 
-    public void saveLog(String status, String error, long duration) {
+    // 🔥 NOW RETURNS ID
+    public long saveLog(String status, String error, long duration) {
 
         String sql = """
             INSERT INTO job_execution_log 
@@ -28,7 +30,7 @@ public class JobExecutionRepository {
         """;
 
         try (Connection conn = DriverManager.getConnection(url, username, password);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"ID"})) {
 
             ps.setString(1, status);
             ps.setLong(2, duration);
@@ -37,9 +39,18 @@ public class JobExecutionRepository {
 
             ps.executeUpdate();
 
+            // 🔥 FETCH GENERATED ID
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+
         } catch (Exception e) {
             System.out.println("❌ Failed to save job log");
             e.printStackTrace();
         }
+
+        return -1;
     }
 }

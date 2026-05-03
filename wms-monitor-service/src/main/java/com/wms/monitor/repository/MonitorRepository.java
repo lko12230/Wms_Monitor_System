@@ -20,16 +20,16 @@ public class MonitorRepository {
         }
     }
 
-    // 🔹 Fetch Logs (NO FILTER ❗)
+    // 🔹 Fetch Logs (ORDER BY LOG_ID ASC ✅)
     public List<MonitorLog> getLogs(Connection conn) throws Exception {
 
         List<MonitorLog> list = new ArrayList<>();
 
         String sql = """
-            SELECT check_code, check_desc, row_count, updated_rows, addwho, adddate
+            SELECT log_id, check_code, check_desc, row_count, updated_rows, addwho, adddate
             FROM wms_monitor_log
             WHERE TRUNC(adddate) = TRUNC(SYSDATE)
-            ORDER BY check_code
+            ORDER BY log_id ASC
         """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
@@ -38,6 +38,8 @@ public class MonitorRepository {
             while (rs.next()) {
                 MonitorLog log = new MonitorLog();
 
+                // 🔥 IMPORTANT: map log_id also
+                log.setLogId(rs.getLong("log_id"));
                 log.setCheckCode(rs.getString("check_code"));
                 log.setCheckDesc(rs.getString("check_desc"));
                 log.setRowCount(rs.getInt("row_count"));

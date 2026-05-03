@@ -4,15 +4,26 @@ import java.util.Date;
 
 public class MonitorLog {
 
+    // 🔥 NEW FIELD (IMPORTANT FOR ORDERING)
+    private Long logId;
+
     private String checkCode;
     private String checkDesc;
     private int rowCount;
     private int updatedRows;
     private String addWho;
-    private Date addDate;      // 🔥 IMPORTANT (timestamp)
-    private String warehouse;  // 🔥 for multi-WH
+    private Date addDate;
+    private String warehouse;
 
     // ================= GETTERS & SETTERS =================
+
+    public Long getLogId() {
+        return logId;
+    }
+
+    public void setLogId(Long logId) {
+        this.logId = logId;
+    }
 
     public String getCheckCode() {
         return checkCode;
@@ -70,12 +81,13 @@ public class MonitorLog {
         this.warehouse = warehouse;
     }
 
-    // ================= OPTIONAL (DEBUG FRIENDLY) =================
+    // ================= DEBUG =================
 
     @Override
     public String toString() {
         return "MonitorLog{" +
-                "checkCode='" + checkCode + '\'' +
+                "logId=" + logId +
+                ", checkCode='" + checkCode + '\'' +
                 ", checkDesc='" + checkDesc + '\'' +
                 ", rowCount=" + rowCount +
                 ", updatedRows=" + updatedRows +
